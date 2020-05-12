@@ -1,11 +1,13 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import './App.less';
 
 const App = () => {
     return (
-        <div className="app">
+        <Provider store={store}>
             React App
-        </div>
+        </Provider>
     );
 }
 export default App;

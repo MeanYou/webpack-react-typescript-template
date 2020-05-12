@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Webpack 4 Boilerplate",
   "main": "index.js",
-  "author": "Tania Rascia <tania@taniarascia.com>",
+  "author": "MeanYou",
   "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js",
@@ -57,7 +57,14 @@
     ]
   },
   "dependencies": {
+    "@types/js-cookie": "^2.2.6",
+    "@types/react-redux": "^7.1.8",
+    "@types/react-router-dom": "^5.1.5",
+    "js-cookie": "^2.2.1",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.2.0",
+    "redux-thunk": "^2.3.0"
   }
 }
