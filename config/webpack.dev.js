@@ -29,7 +29,7 @@ module.exports = merge(common, {
     open: true,
     compress: true,
     hot: true,
-    port: 8080,
+    port: 3000,
   },
 
   plugins: [
@@ -40,4 +40,10 @@ module.exports = merge(common, {
      */
     new webpack.HotModuleReplacementPlugin(),
   ],
+
+  resolve: {
+    alias: {
+      '@': paths.src
+    },
+  }
 })

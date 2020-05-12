@@ -30,17 +30,20 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.(scss|css)$/,
+        test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-            },
-          },
-          'postcss-loader',
-          'sass-loader',
+          { loader: 'css-loader', options: { sourceMap: true, importLoaders: 1 } },
+          { loader: 'postcss-loader', options: { sourceMap: true } },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader', options: { sourceMap: true, importLoaders: 2 } },
+          { loader: 'postcss-loader', options: { sourceMap: true } },
+          { loader: 'less-loader', options: { sourceMap: true } },
         ],
       },
     ],
@@ -52,7 +55,9 @@ module.exports = merge(common, {
    * Production minimizing of JavaSvript and CSS assets.
    */
   optimization: {
-    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+    minimizer: [new TerserJSPlugin({
+      extractComments: false
+    }), new OptimizeCSSAssetsPlugin({})],
     // Once your build outputs multiple chunks, this option will ensure they share the webpack runtime
     // instead of having their own. This also helps with long-term caching, since the chunks will only
     // change when actual code changes, not the webpack runtime.
@@ -60,13 +65,8 @@ module.exports = merge(common, {
     // This breaks apart commonly shared deps (react, semantic ui, etc) into one shared bundle. React, etc
     // won't change as often as the app code, so this chunk can be cached separately from app code.
     splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/](react|react-dom|lodash)[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
+      chunks: 'all',
+      name: false,
     },
   },
   performance: {
