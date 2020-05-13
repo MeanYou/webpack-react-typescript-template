@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = env => {
   const isEnvDevelopment = env.mode === 'development';
   const isEnvProduction = env.mode === 'production';
+  const useSourcemap = env.sourcemap;
 
   return {
     /**
@@ -102,8 +103,8 @@ module.exports = env => {
               test: /\.css$/,
               use: [
                 isEnvProduction ? MiniCssExtractPlugin.loader : 'style-loader',
-                { loader: 'css-loader', options: { sourceMap: isEnvProduction, importLoaders: 1 } },
-                { loader: 'postcss-loader', options: { sourceMap: isEnvProduction } },
+                { loader: 'css-loader', options: { sourceMap: useSourcemap, importLoaders: 1 } },
+                { loader: 'postcss-loader', options: { sourceMap: useSourcemap } },
               ],
             },
             {

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import triangle from './triangle.png';
+import './style.less';
 
 interface MainProps {
     a: number;

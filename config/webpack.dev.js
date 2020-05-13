@@ -15,7 +15,7 @@ const devConf = env => {
      *
      * Control how source maps are generated.
      */
-    devtool: 'inline-source-map',
+    devtool: 'cheap-module-eval-source-map',
 
     /**
      * DevServer

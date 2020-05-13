@@ -5,69 +5,79 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const safePostCssParser = require('postcss-safe-parser')
 
 const proConf = env => {
-  const useSourceMap = true;
+  const useSourceMap = env.sourcemap;
+  const useCompress = env.compress;
+
+  const plugins = [
+    /**
+     * Removes/cleans build folders and unused assets when rebuilding.
+     */
+    new CleanWebpackPlugin(),
+    /**
+     * Copies files from target to destination folder.
+     */
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: paths.static,
+    //     to: 'assets',
+    //     ignore: ['*.DS_Store'],
+    //   },
+    // ]),
+    /**
+     * 根据模板生产html文件的插件
+     */
+    new HtmlWebpackPlugin({
+      title: 'Webpack',
+      favicon: paths.static + '/favicon.png',
+      template: paths.src + '/template.html', // template file
+      filename: 'index.html', // output file
+      inject: true,
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
+      }
+    }),
+    /**
+     * Extracts CSS into separate files.
+     *
+     * Note: style-loader is for development, MiniCssExtractPlugin is for production.
+     * They cannot be used together in the same config.
+     */
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].[contenthash:8].css',
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+    })
+  ];
+  if (useCompress) {
+    /**
+     * 压缩插件，大于10kb的js和css文件进行压缩
+     */
+    plugins.push(new CompressionPlugin({
+      algorithm: 'gzip',
+      test: /\.(js|css)$/,
+      threshold: 10240,
+      minRatio: 0.8
+    }));
+  }
+
   return {
     mode: 'production',
-    devtool: false,
-    output: {
-      path: paths.build,
-      publicPath: '/',
-      filename: '[name].[contenthash].bundle.js',
-    },
-    plugins: [
-      /**
-       * Removes/cleans build folders and unused assets when rebuilding.
-       */
-      new CleanWebpackPlugin(),
-
-      /**
-       * Copies files from target to destination folder.
-       */
-      // new CopyWebpackPlugin([
-      //   {
-      //     from: paths.static,
-      //     to: 'assets',
-      //     ignore: ['*.DS_Store'],
-      //   },
-      // ]),
-      /**
-       * 根据模板生产html文件的插件
-       */
-      new HtmlWebpackPlugin({
-        title: 'Webpack',
-        favicon: paths.static + '/favicon.png',
-        template: paths.src + '/template.html', // template file
-        filename: 'index.html', // output file
-        inject: true,
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          keepClosingSlash: true,
-          minifyJS: true,
-          minifyCSS: true,
-          minifyURLs: true,
-        }
-      }),
-      /**
-       * Extracts CSS into separate files.
-       *
-       * Note: style-loader is for development, MiniCssExtractPlugin is for production.
-       * They cannot be used together in the same config.
-       */
-      new MiniCssExtractPlugin({
-        filename: 'styles/[name].[contenthash].css',
-        chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
-      }),
-    ],
+    devtool: useSourceMap ? 'source-map' : false,
+    plugins: plugins,
 
     /**
      * Production minimizing of JavaSvript and CSS assets.
@@ -96,7 +106,8 @@ const proConf = env => {
         cache: true,
         sourceMap: useSourceMap,
         extractComments: false
-      }), new OptimizeCSSAssetsPlugin({
+      }),
+      new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           parser: safePostCssParser,
           map: useSourceMap
