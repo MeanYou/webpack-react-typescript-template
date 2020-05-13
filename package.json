@@ -6,8 +6,8 @@
   "author": "MeanYou",
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js",
-    "build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js"
+    "start": "cross-env NODE_ENV=development webpack-dev-server --env.mode development --config config/webpack.dev.js",
+    "build": "cross-env NODE_ENV=production webpack --env.mode production --config config/webpack.prod.js"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -61,6 +61,7 @@
     "@types/react-redux": "^7.1.8",
     "@types/react-router-dom": "^5.1.5",
     "js-cookie": "^2.2.1",
+    "postcss-safe-parser": "^4.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",

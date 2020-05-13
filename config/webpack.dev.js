@@ -1,49 +1,53 @@
 const paths = require('./paths')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
-const common = require('./webpack.common.js')
+const baseConf = require('./webpack.base.js')
 
-module.exports = merge(common, {
-  /**
-   * Mode
-   *
-   * Set the mode to development or production.
-   */
-  mode: 'development',
-
-  /**
-   * Devtool
-   *
-   * Control how source maps are generated.
-   */
-  devtool: 'inline-source-map',
-
-  /**
-   * DevServer
-   *
-   * Spin up a server for quick development.
-   */
-  devServer: {
-    historyApiFallback: true,
-    contentBase: paths.build,
-    open: true,
-    compress: true,
-    hot: true,
-    port: 3000,
-  },
-
-  plugins: [
+const devConf = env => {
+  return {
     /**
-     * HotModuleReplacementPlugin
-     *
-     * Only update what has changed.
+     * Set the mode to development or production.
      */
-    new webpack.HotModuleReplacementPlugin(),
-  ],
+    mode: 'development',
 
-  resolve: {
-    alias: {
-      '@': paths.src
+    /**
+     * Devtool
+     *
+     * Control how source maps are generated.
+     */
+    devtool: 'inline-source-map',
+
+    /**
+     * DevServer
+     *
+     * Spin up a server for quick development.
+     */
+    devServer: {
+      historyApiFallback: true,
+      contentBase: paths.build,
+      open: true,
+      compress: true,
+      hot: true,
+      port: 3000,
     },
-  }
-})
+
+    plugins: [
+      /**
+       * HotModuleReplacementPlugin
+       *
+       * Only update what has changed.
+       */
+      new webpack.HotModuleReplacementPlugin(),
+    ],
+
+    resolve: {
+      alias: {
+        '@': paths.src
+      },
+    }
+  };
+}
+
+module.exports = env => {
+  return merge(devConf(env), baseConf(env));
+}
