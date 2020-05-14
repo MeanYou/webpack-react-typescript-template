@@ -1,51 +1,73 @@
 # Webpack Boilerplate
 
-Minimal Webpack 4 boilerplate with Babel, Sass, ESLint, Hot Module Replacement, and development/production optimization.
+参考 [`webpack-boilerplate`](https://github.com/jantimon/html-webpack-plugin) 和 [`create-react-app`](https://github.com/facebook/create-react-app) 写的一个webpack基础配置，满足普通项目使用
 
-## Installation
+## 安装
 
 ```
-git clone git@github.com:taniarascia/webpack-boilerplate
+git clone https://gitee.com/meanyou/webpack-boilerplate.git
 npm i
 ```
 
-## Usage
+## 使用
 
-### Development server
+### 启动开发环境
 
 ```bash
 npm start
 ```
 
-You can view the development server at `localhost:8080`.
+项目自动打开，默认端口8080
 
-### Production build
+### 生产环境打包
 
+普通打包
 ```bash
 npm run build
 ```
 
-> Note: Install [http-server](https://www.npmjs.com/package/http-server) globally to deploy a simple server.
+生成sourcemap打包
+```bash
+npm run build_sourcemap
+```
+
+生成gzip打包
+```bash
+npm run build_compress
+```
+
+生成sourcemap和gzip打包
+```bash
+npm run build_sourcemap_compress
+```
+
+### 浏览项目
 
 ```bash 
 npm i -g http-server
-```
-
-You can view the deploy by creating a server in `dist`. 
-
-```bash
 cd dist && http-server
 ```
 
-## Features
+### 一些提示
+
+- 在src目录下面修改App.tsx即可开始编写业务代码
+- 在 `/public` 目录下放静态资源，建议只用来存放一些外部js库，图片等资源放在 `/src` 下面让webpack编译
+- 默认生产环境下publicPath为./，直接打开生成的index.html也可以浏览项目
+- 项目默认集成了 `react` `react-router-dom` `redux` `react-redux` `typescript`
+- 修改 `/tsconfig.json` 来配置typescript
+
+## 特性
 
 - [Webpack](https://webpack.js.org/)
 - [Babel](https://babeljs.io/)
-- [Sass](https://sass-lang.com/)
+- [Less](http://lesscss.cn/)
 - [PostCSS](https://postcss.org/)
 - [ESLint](https://eslint.org/)
+- [React](https://react.docschina.org/)
+- [React-Router](https://reacttraining.com/react-router/web/guides/quick-start)
+- [Typescript](https://www.typescriptlang.org/)
 
-## Dependencies
+## 依赖
 
 ### Webpack
 
@@ -66,8 +88,7 @@ cd dist && http-server
 ### Loaders
 
 - [`babel-loader`](https://webpack.js.org/loaders/babel-loader/) - Transpile files with Babel and Webpack.
-- [`sass-loader`](https://webpack.js.org/loaders/sass-loader/) - Load SCSS and compile to CSS.
-  - [`node-sass`](https://github.com/sass/node-sass) - Node Sass.
+- [`less-loader`](https://www.webpackjs.com/loaders/less-loader/) - A Less loader for webpack. Compiles Less to CSS.
 - [`postcss-loader`](https://webpack.js.org/loaders/postcss-loader/) - Process CSS with PostCSS.
   - [`cssnano`](https://github.com/cssnano/cssnano) - Optimize and compress PostCSS.
   - [`postcss-preset-env`](https://www.npmjs.com/package/postcss-preset-env) - Sensible defaults for PostCSS.
@@ -85,7 +106,8 @@ cd dist && http-server
 - [`mini-css-extract-plugin`](https://github.com/webpack-contrib/mini-css-extract-plugin) - Extract CSS into separate files.
 - [`optimize-css-assets-webpack-plugin`](https://github.com/NMFR/optimize-css-assets-webpack-plugin) - Optimize and minimize CSS assets.
 - [`terser-webpack-plugin`](https://github.com/webpack-contrib/terser-webpack-plugin) - Minify JavaScript.
+- [`compression-webpack-plugin`](https://github.com/webpack-contrib/compression-webpack-plugin) Prepare compressed versions of assets to serve them with Content-Encoding.
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+开源MIT [MIT License](LICENSE).
