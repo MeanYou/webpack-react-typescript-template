@@ -21,36 +21,37 @@ const proConf = env => {
     new CleanWebpackPlugin(),
     /**
      * Copies files from target to destination folder.
+     * 不复制模板文件
      */
-    // new CopyWebpackPlugin([
-    //   {
-    //     from: paths.static,
-    //     to: 'assets',
-    //     ignore: ['*.DS_Store'],
-    //   },
-    // ]),
-    /**
-     * 根据模板生产html文件的插件
-     */
-    new HtmlWebpackPlugin({
-      title: 'Webpack',
-      favicon: paths.static + '/favicon.png',
-      template: paths.src + '/template.html', // template file
-      filename: 'index.html', // output file
-      inject: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeRedundantAttributes: true,
-        useShortDoctype: true,
-        removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true,
-      }
-    }),
+    new CopyWebpackPlugin([
+      {
+        from: paths.static,
+        to: paths.build,
+        ignore: ['template.html','*.DS_Store'],
+      },
+    ]),
+    // /**
+    //  * 根据模板生产html文件的插件
+    //  */
+    // new HtmlWebpackPlugin({
+    //   title: 'Webpack',
+    //   favicon: paths.static + '/favicon.png',
+    //   template: paths.src + '/template.html', // template file
+    //   filename: 'index.html', // output file
+    //   inject: true,
+    //   minify: {
+    //     removeComments: true,
+    //     collapseWhitespace: true,
+    //     removeRedundantAttributes: true,
+    //     useShortDoctype: true,
+    //     removeEmptyAttributes: true,
+    //     removeStyleLinkTypeAttributes: true,
+    //     keepClosingSlash: true,
+    //     minifyJS: true,
+    //     minifyCSS: true,
+    //     minifyURLs: true,
+    //   }
+    // }),
     /**
      * Extracts CSS into separate files.
      *
@@ -77,6 +78,7 @@ const proConf = env => {
   return {
     mode: 'production',
     devtool: useSourceMap ? 'source-map' : false,
+    // devtool: false,
     plugins: plugins,
 
     /**
@@ -120,7 +122,7 @@ const proConf = env => {
       // Once your build outputs multiple chunks, this option will ensure they share the webpack runtime
       // instead of having their own. This also helps with long-term caching, since the chunks will only
       // change when actual code changes, not the webpack runtime.
-      runtimeChunk: 'single',
+      runtimeChunk: true,
       // This breaks apart commonly shared deps (react, semantic ui, etc) into one shared bundle. React, etc
       // won't change as often as the app code, so this chunk can be cached separately from app code.
       splitChunks: {

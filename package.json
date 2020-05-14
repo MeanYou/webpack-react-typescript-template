@@ -61,10 +61,16 @@
     ]
   },
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/runtime": "^7.9.6",
+    "@types/axios": "^0.14.0",
     "@types/js-cookie": "^2.2.6",
     "@types/react-redux": "^7.1.8",
     "@types/react-router-dom": "^5.1.5",
+    "axios": "^0.19.2",
     "js-cookie": "^2.2.1",
+    "postcss-flexbugs-fixes": "^4.2.1",
+    "postcss-normalize": "^9.0.0",
     "postcss-safe-parser": "^4.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

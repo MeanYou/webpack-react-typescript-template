@@ -1,15 +1,41 @@
+const webpack = require('webpack')
+const path = require('path')
 const paths = require('./paths')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const postcssNormalize = require('postcss-normalize')
 
 module.exports = env => {
+  /**
+   * env为package.json中scripts定义的变量
+   * mode表示环境，development为开发环境，production为生产环境
+   * sourcemap表示是否生成sourcemap文件，生成sourcemap方便调试，但会增大打包体积
+   */
   const isEnvDevelopment = env.mode === 'development';
   const isEnvProduction = env.mode === 'production';
   const useSourcemap = env.sourcemap;
+  /**
+   * 静态资源路径表示服务器根目录
+   * 开发环境为devServer的contentBase，默认/
+   * 生产环境下可以自定义，比如CDN下的静态资源就设置为https://www.cdn.com/
+   * 生产环境默认为./，使用相对路径可以直接打开index.html访问页面
+   */
+  const publicPath = isEnvProduction ? './' : isEnvDevelopment && '/';
+  const shouldUseRelativeAssetPaths = publicPath === './';
+  /**
+   * publicUrl和publicPath类似
+   * 在html中以%PUBLIC_URL%的形式访问
+   * 在Javascript中以process.env.PUBLIC_URL的形式访问
+   * 使用slice删除/，%PUBLIC_URL%/abc相比%PUBLIC_URL%abc，写法更好些
+   */
+  const publicUrl = isEnvProduction
+    ? publicPath.slice(0, -1)
+    : isEnvDevelopment && '';
 
   return {
     /**
-       * The first place Webpack looks to start building the bundle.
-       */
+     * The first place Webpack looks to start building the bundle.
+     */
     entry: [paths.src + '/index.tsx'],
 
     /**
@@ -25,9 +51,15 @@ module.exports = env => {
         ? 'static/js/[name].[contenthash:8].chunk.js'
         : isEnvDevelopment && 'static/js/[name].chunk.js',
       // 服务的根目录，比如静态资源需要放在cdn，就设置为https://alicdn.com/
-      publicPath: isEnvProduction
-        ? './'
-        : isEnvDevelopment && '/',
+      publicPath: publicPath,
+      // Point sourcemap entries to original disk location (format as URL on Windows)
+      devtoolModuleFilenameTemplate: isEnvProduction
+        ? info =>
+          path
+            .relative(paths.src, info.absoluteResourcePath)
+            .replace(/\\/g, '/')
+        : isEnvDevelopment &&
+        (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
     },
 
     /**
@@ -74,24 +106,20 @@ module.exports = env => {
             /**
              * 处理非src路径下的js文件
              */
-            // {
-            //   test: /\.js$/,
-            //   exclude: /@babel(?:\/|\\{1,2})runtime/,
-            //   loader: 'babel-loader',
-            //   options: {
-            //     babelrc: false,
-            //     configFile: false,
-            //     compact: false,
-            //     presets: [
-            //       [
-            //         '@babel/preset-env',
-            //         { helpers: true },
-            //       ]
-            //     ],
-            //     cacheDirectory: true,
-            //     cacheCompression: isEnvProduction
-            //   }
-            // },
+            {
+              test: /\.js$/,
+              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              loader: 'babel-loader',
+              options: {
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                presets: ['@babel/preset-env'],
+                cacheDirectory: false,
+                cacheCompression: isEnvProduction,
+                sourceMaps: false
+              }
+            },
 
             /**
              * Styles
@@ -102,18 +130,73 @@ module.exports = env => {
             {
               test: /\.css$/,
               use: [
-                isEnvProduction ? MiniCssExtractPlugin.loader : 'style-loader',
-                { loader: 'css-loader', options: { sourceMap: useSourcemap, importLoaders: 1 } },
-                { loader: 'postcss-loader', options: { sourceMap: useSourcemap } },
-              ],
+                isEnvDevelopment ? 'style-loader'
+                  : isEnvProduction && {
+                    loader: MiniCssExtractPlugin.loader,
+                    options: shouldUseRelativeAssetPaths ? { publicPath: '../../' } : {},
+                  },
+                {
+                  loader: 'css-loader',
+                  options: {
+                    sourceMap: useSourcemap,
+                    importLoaders: 1
+                  }
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    ident: 'postcss',
+                    plugins: () => [
+                      require('postcss-flexbugs-fixes'),
+                      require('postcss-preset-env')({
+                        autoprefixer: {
+                          flexbox: 'no-2009',
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                    sourceMap: useSourcemap
+                  }
+                }
+              ]
             },
             {
               test: /\.less$/,
               use: [
-                isEnvProduction ? MiniCssExtractPlugin.loader : 'style-loader',
-                { loader: 'css-loader', options: { importLoaders: 2 } },
-                { loader: 'postcss-loader', options: { sourceMap: isEnvProduction } },
-                { loader: 'less-loader', options: { sourceMap: isEnvProduction } },
+                isEnvDevelopment ? 'style-loader'
+                  : isEnvProduction && {
+                    loader: MiniCssExtractPlugin.loader,
+                    options: shouldUseRelativeAssetPaths ? { publicPath: '../../' } : {},
+                  },
+                {
+                  loader: 'css-loader',
+                  options: {
+                    sourceMap: useSourcemap,
+                    importLoaders: 1
+                  }
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    ident: 'postcss',
+                    plugins: () => [
+                      require('postcss-flexbugs-fixes'),
+                      require('postcss-preset-env')({
+                        autoprefixer: {
+                          flexbox: 'no-2009',
+                        },
+                        stage: 3,
+                      }),
+                      postcssNormalize(),
+                    ],
+                    sourceMap: useSourcemap
+                  }
+                },
+                {
+                  loader: 'less-loader',
+                  options: { sourceMap: useSourcemap }
+                }
               ],
             },
 
@@ -132,6 +215,47 @@ module.exports = env => {
         },
       ],
     },
-    resolve: { extensions: [".js", ".jsx", ".ts", ".tsx"] },
+    plugins: [
+      new HtmlWebpackPlugin(
+        Object.assign(
+          {},
+          {
+            inject: true,
+            template: `${paths.static}/template.html`
+          },
+          isEnvProduction
+            ? {
+              minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeRedundantAttributes: true,
+                useShortDoctype: true,
+                removeEmptyAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                keepClosingSlash: true,
+                minifyJS: true,
+                minifyCSS: true,
+                minifyURLs: true,
+              },
+            }
+            : undefined
+        )
+      ),
+      /**
+       * 给JS环境造两个变量
+       * NODE_ENV表示环境
+       * PUBLIC_URL表示/public目录，需要引入外部js库的时候比较方便
+       */
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify(env.mode),
+          PUBLIC_URL: JSON.stringify(publicUrl)
+        }
+      }),
+    ],
+    resolve: {
+      modules: ['node_modules'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
+    },
   };
 }

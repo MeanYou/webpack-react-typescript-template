@@ -15,7 +15,8 @@ const devConf = env => {
      *
      * Control how source maps are generated.
      */
-    devtool: 'cheap-module-eval-source-map',
+    // devtool: 'cheap-module-eval-source-map',
+    devtool: false,
 
     /**
      * DevServer
@@ -23,8 +24,9 @@ const devConf = env => {
      * Spin up a server for quick development.
      */
     devServer: {
+      clientLogLevel: 'none',
       historyApiFallback: true,
-      contentBase: paths.build,
+      contentBase: paths.static,
       open: true,
       compress: true,
       hot: true,
