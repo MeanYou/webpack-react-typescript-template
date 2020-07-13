@@ -38,6 +38,7 @@
         "node_modules",
         "dist",
         "build",
-        "mock"
+        "mock",
+        "config"
     ]
 }
