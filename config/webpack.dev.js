@@ -21,7 +21,8 @@ const devConf = env => {
     /**
      * DevServer
      *
-     * Spin up a server for quick development.
+     * 开发服务器配置
+     * 
      */
     devServer: {
       clientLogLevel: 'none',
@@ -31,6 +32,9 @@ const devConf = env => {
       compress: true,
       hot: true,
       port: 3000,
+      proxy: {
+        '/xxx': 'http://127.0.0.1:8888'
+      },
     },
 
     plugins: [
@@ -40,13 +44,7 @@ const devConf = env => {
        * Only update what has changed.
        */
       new webpack.HotModuleReplacementPlugin(),
-    ],
-
-    resolve: {
-      alias: {
-        '@': paths.src
-      },
-    }
+    ]
   };
 }
 

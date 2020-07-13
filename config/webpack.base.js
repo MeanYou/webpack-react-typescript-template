@@ -46,7 +46,7 @@ module.exports = env => {
       pathinfo: isEnvDevelopment,
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].bundle.js',
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
         : isEnvDevelopment && 'static/js/[name].chunk.js',
@@ -71,7 +71,7 @@ module.exports = env => {
          * js jsx ts tsx预执行lint
          */
         {
-          test: /\.(js|jsx|ts|tsx)$/,
+          test: /\.(js|jsx|ts|tsx|cjs)$/,
           enforce: 'pre',
           use: ['eslint-loader'],
           include: paths.src
@@ -254,8 +254,13 @@ module.exports = env => {
       }),
     ],
     resolve: {
+      alias: {
+        '@': paths.src
+      },
       modules: ['node_modules'],
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
     },
+    externals: {
+    }
   };
 }
